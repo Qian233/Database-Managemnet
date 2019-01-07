@@ -1,0 +1,178 @@
+SQL> start D:\Desktop\2018-Fall\95703-F-Database\Assignment1\new1.sql
+SQL> --Part 1
+SQL> 
+SQL> --1
+SQL> 
+SQL> INSERT INTO item VALUES
+  2  ('30', 'Dell', 'Alienware 15 R4', '2.1-GHz Intel Core i7-8750H processor, 16GB Memory, 256GB Solid State Drive');
+INSERT INTO item VALUES
+*
+ERROR at line 1:
+ORA-00001: unique constraint (LAB1.ITEM_ID_PK) violated 
+
+
+SQL> INSERT INTO item VALUES
+  2  ('31', 'Apple', 'MacBook Air', '1.8GHz dual-core Intel Core i5 processor, 8GB of 1600MHz LPDDR3 onboard memory, 128GB PCIe-based SSD');
+INSERT INTO item VALUES
+*
+ERROR at line 1:
+ORA-00001: unique constraint (LAB1.ITEM_ID_PK) violated 
+
+
+SQL> INSERT INTO item VALUES
+  2  ('32', 'HP', 'Envy', '8th Generation Intel Core i7 processor, 8 GB memory, 1 TB HDD');
+INSERT INTO item VALUES
+*
+ERROR at line 1:
+ORA-00001: unique constraint (LAB1.ITEM_ID_PK) violated 
+
+
+SQL> 
+SQL> --2
+SQL> SELECT * FROM ITEM;
+
+ITEM_ID  ITEM_MANUF ITEM_MODEL            COMMENTS                                                                                                                                                              
+-------- ---------- ---------------------------  ---------------------------------------------------------------------------------------                                                                                                                                                                                         
+15       Dell       XPS 13                          6th Generation Intel Core i5 Processor 2.8GHz, 8GB Memory, 256GB Solid State Drive 
+17       Apple    Mac Pro                        804457 3.5GHz 6-Core Intel Xeon E5 Processor, 16GB 1866MHz DDR3 ECC memory, 256Gb PCIe-based flash storage. 
+19       HP         Spectre                         Spectre x360, Intel core i5-5200U Processor 2.2GHz; 8GB RAM memory expandable to 16GB; SSD Drive; Long battery life
+23       Apple    iMac                              805023 3.3GHz quad-core Intel Core i5 processor, Turbo boost up to 3.9GHz, 8GB memory, 2TB Fusion Drive, AMD Radeon R9 M395 with 2GB video memory, Retina 5K 5120-by-2880 P3 display
+27       Dell       XPS 15                          15.6" display, 8th Generation Intel Core i9 Processor, 32GB Memory, 1TB Hard Drive
+29       Apple       MacBook Pro             2.9GHz 6-Core Intel Core i9, 32GB RAM, 1TB SSD, Radeon Pro 560X; Turbo Boost up to 4.3GHz 
+30       Dell       Alienware 15 R4            2.1-GHz Intel Core i7-8750H processor, 16GB Memory, 256GB Solid State Drive 
+31       Apple      MacBook Air               1.8GHz dual-core Intel Core i5 processor, 8GB of 1600MHz LPDDR3 onboard memory, 128GB PCIe-based SSD
+32       HP         Envy                              8th Generation Intel Core i7 processor, 8 GB memory, 1 TB HDD
+
+9 rows selected.
+
+SQL> 
+SQL> --3
+SQL> ALTER TABLE LOAN
+  2  ADD CONSTRAINT RETURN_DAY_CONSTRAINT CHECK (DATE_RETURNED >= START_DATE);
+ADD CONSTRAINT RETURN_DAY_CONSTRAINT CHECK (DATE_RETURNED >= START_DATE)
+               *
+ERROR at line 2:
+ORA-02264: name already used by an existing constraint 
+
+
+SQL> 
+SQL> --Part 2
+SQL> 
+SQL> --1
+SQL> SELECT COMP_ID, COMP_NAME, ITEM_MANUF, ITEM_MODEL, SYSDATE - PURCHASE_DATE AS NUMBER_OF_DAYS_SINCE_PURCHASE
+  2  FROM ITEM I JOIN COMPUTER C ON I.ITEM_ID = C.ITEM_ID
+  3  MINUS
+  4  SELECT C.COMP_ID, COMP_NAME, ITEM_MANUF, ITEM_MODEL, SYSDATE - PURCHASE_DATE AS NUMBER_OF_DAYS_SINCE_PURCHASE
+  5  FROM ITEM I JOIN COMPUTER C ON I.ITEM_ID = C.ITEM_ID
+  6  JOIN LOAN L ON C.COMP_ID = L.COMP_ID;
+
+COMP_ID  COMP_NAME       ITEM_MANUF ITEM_MODEL           NUMBER_OF_DAYS_SINCE_PURCHASE                                                                                                                  
+-------- --------------- ---------- -------------------- -----------------------------                                                                                                                  
+C33      Cloud           HP         Spectre                                 69.9893403                                                                                                                  
+C34      Koala           Apple      iMac                                    69.9893403                                                                                                                  
+
+2 rows selected.
+
+SQL> 
+SQL> --2 
+SQL> SELECT DISTINCT S.ST_ID, ST_FNAME || ' ' || ST_LNAME AS NAME
+  2  FROM STUDENT S JOIN LOAN L ON S.ST_ID = L.ST_ID
+  3  JOIN COMPUTER C ON C.COMP_ID = L.COMP_ID
+  4  JOIN ITEM I ON I.ITEM_ID = C.ITEM_ID
+  5  WHERE ITEM_MANUF = 'Dell' AND  TO_CHAR(START_DATE,'YYYY') = TO_CHAR(SYSDATE,'YYYY')-1;
+
+ST_ID    NAME                                                                                                                                                                                           
+-------- ----------------------------------------------------------------------------------                                                                                                             
+238      Richard Johnson                                                                                                                                                                                
+207      Richard Guerra                                                                                                                                                                                 
+360      John Bevens                                                                                                                                                                                    
+320      Anna Tavernier                                                                                                                                                                                 
+241      Vijay Singh                                                                                                                                                                                    
+362      Fred Couples                                                                                                                                                                                   
+
+6 rows selected.
+
+SQL> 
+SQL> --3
+SQL> SELECT S.ST_ID, ST_FNAME || ' ' || ST_LNAME AS NAME
+  2  FROM STUDENT S JOIN LOAN L ON S.ST_ID = L.ST_ID
+  3  JOIN COMPUTER C ON C.COMP_ID = L.COMP_ID
+  4  JOIN ITEM I ON I.ITEM_ID = C.ITEM_ID
+  5  WHERE ITEM_MANUF = 'Dell' OR ITEM_MANUF = 'HP'
+  6  MINUS
+  7  SELECT S.ST_ID, ST_FNAME || ' ' || ST_LNAME AS NAME
+  8  FROM STUDENT S JOIN LOAN L ON S.ST_ID = L.ST_ID
+  9  JOIN COMPUTER C ON C.COMP_ID = L.COMP_ID
+ 10  JOIN ITEM I ON I.ITEM_ID = C.ITEM_ID
+ 11  WHERE ITEM_MANUF != 'Dell' AND ITEM_MANUF != 'HP';
+
+ST_ID    NAME                                                                                                                                                                                           
+-------- ----------------------------------------------------------------------------------                                                                                                             
+207      Richard Guerra                                                                                                                                                                                 
+213      Sandra Miller                                                                                                                                                                                  
+241      Vijay Singh                                                                                                                                                                                    
+323      Joan Nimoy                                                                                                                                                                                     
+425      Angela Pepper                                                                                                                                                                                  
+
+5 rows selected.
+
+SQL> 
+SQL> --4
+SQL> SELECT COMP_NAME, ITEM_MODEL, L.LOCATION_ID || '- ' || LOC_BLDG || ',' || LOC_ROOM AS LOCATION
+  2  FROM COMPUTER C JOIN ITEM I ON I.ITEM_ID = C.ITEM_ID
+  3  JOIN LOCATION L ON C.LOCATION_ID = L.LOCATION_ID
+  4  JOIN LOAN LO ON LO.COMP_ID = C.COMP_ID
+  5  WHERE ITEM_MANUF = 'Dell' AND (START_DATE >= '01-JAN-17' AND START_DATE <= '31-DEC-17') AND (DATE_RETURNED >= '01-JAN-17' AND DATE_RETURNED <= '31-DEC-17');
+
+COMP_NAME       ITEM_MODEL           LOCATION                                                                                                                                                           
+--------------- -------------------- ----------------------------------------------------------------                                                                                                   
+Barnaby         XPS 13               2 - HBH,116                                                                                                                                                        
+Newell          XPS 13               3 - NSH,116                                                                                                                                                        
+Newell          XPS 13               3 - NSH,116                                                                                                                                                        
+Newell          XPS 13               3 - NSH,116                                                                                                                                                        
+
+4 rows selected.
+
+SQL> 
+SQL> --5
+SQL> SELECT ITEM_MODEL
+  2  FROM ITEM I JOIN COMPUTER C ON I.ITEM_ID = C.ITEM_ID
+  3  JOIN LOAN L ON L.COMP_ID = C.COMP_ID
+  4  JOIN STUDENT S ON S.ST_ID = L.ST_ID
+  5  JOIN LOCATION LOC ON LOC.LOCATION_ID = C.LOCATION_ID
+  6  WHERE LOC_BLDG = 'HBH' AND ST_FNAME = 'Fred' AND ST_LNAME = 'Couples'
+  7  MINUS
+  8  SELECT ITEM_MODEL
+  9  FROM ITEM I JOIN COMPUTER C ON I.ITEM_ID = C.ITEM_ID
+ 10  JOIN LOAN L ON L.COMP_ID = C.COMP_ID
+ 11  JOIN STUDENT S ON S.ST_ID = L.ST_ID
+ 12  JOIN LOCATION LOC ON LOC.LOCATION_ID = C.LOCATION_ID
+ 13  WHERE LOC_BLDG = 'HBH'AND ST_FNAME = 'Joan' AND ST_LNAME = 'Nimoy';
+
+ITEM_MODEL                                                                                                                                                                                              
+--------------------                                                                                                                                                                                    
+Mac Pro                                                                                                                                                                                                 
+Spectre                                                                                                                                                                                                 
+
+2 rows selected.
+
+SQL> 
+SQL> --6
+SQL> SELECT ST_ID || ' - ' || ST_FNAME || ' ' || ST_LNAME AS STUDENT_NAME, EMAIL
+  2  FROM STUDENT
+  3  MINUS
+  4  SELECT S.ST_ID || ' - ' || ST_FNAME || ' ' || ST_LNAME AS STUDENT_NAME, EMAIL
+  5  FROM STUDENT S JOIN LOAN L ON S.ST_ID = L.ST_ID;
+
+STUDENT_NAME                                                                                     EMAIL                                                                                                  
+------------------------------------------------------------------------------------------------ ------------------------------                                                                         
+407  - Bing Lee                                                                                  binlee@ab.uni.edu                                                                                      
+450  - Ruben Sanchez                                                                             ruben@ab.uni.edu                                                                                       
+
+2 rows selected.
+
+SQL> 
+SQL> 
+SQL> 
+SQL> 
+SQL> spool off

@@ -1,0 +1,187 @@
+DROP TABLE LOAN;
+DROP TABLE STUDENT;
+DROP TABLE PROGRAM;
+DROP TABLE COMPUTER;
+DROP TABLE LOCATION;
+DROP TABLE ITEM;
+
+CREATE TABLE Program
+(Prog_ID    CHAR(7),
+ Name       VARCHAR2(25),
+ CONSTRAINT Program_ProgID_PK PRIMARY KEY (Prog_ID));
+
+CREATE TABLE Student
+(St_ID      CHAR(4),
+ St_LName   VARCHAR2(20),
+ St_FName   VARCHAR2(20),
+ Email      VARCHAR2(25),
+ Prog_ID    CHAR(7),
+ CONSTRAINT Student_StID_PK   PRIMARY KEY (St_ID),
+ CONSTRAINT Student_ProgID_FK FOREIGN KEY (Prog_ID) REFERENCES Program (Prog_ID));
+
+CREATE TABLE Location
+(Location_ID CHAR(2),
+ Loc_Bldg    VARCHAR2(20),
+ Loc_Room    CHAR(7),
+ CONSTRAINT  Location_ID_PK PRIMARY KEY (Location_ID));
+
+CREATE TABLE Item
+(Item_ID     CHAR(4),
+ Item_Manuf  VARCHAR2(30),
+ Item_Model  VARCHAR2(30),
+ Comments    VARCHAR2(300),
+ CONSTRAINT  Item_ID_PK PRIMARY KEY (Item_ID));
+
+CREATE TABLE Computer
+(Comp_ID        CHAR(4),
+ Comp_Name      VARCHAR2(20),
+ Purchase_Date  Date, 
+ Purchase_Price Number(7,2),
+ Location_ID    CHAR(2),
+ Item_ID        CHAR(4),
+ Vendor_Name    VARCHAR2(20),
+ CONSTRAINT Computer_CompID_PK     PRIMARY KEY (Comp_ID),
+ CONSTRAINT Computer_locationID_FK FOREIGN KEY (Location_ID) REFERENCES Location (Location_ID),
+ CONSTRAINT Computer_ItemID_FK     FOREIGN KEY (Item_ID)     REFERENCES Item (Item_ID));
+
+CREATE TABLE Loan
+(Loan_ID       Number(6),
+ St_ID         CHAR(4),
+ Comp_ID       CHAR(4),
+ Start_Date    DATE DEFAULT SYSDATE,
+ Date_Returned DATE,
+ CONSTRAINT Loan_LoanID_PK PRIMARY KEY (Loan_ID),
+ CONSTRAINT Loan_StID_FK   FOREIGN KEY (St_ID)   REFERENCES student (St_ID),
+ CONSTRAINT Loan_compID_FK FOREIGN KEY (Comp_ID) REFERENCES computer (Comp_ID));
+
+INSERT INTO Program VALUES ('COMPFIN', 'Computational Finance');
+INSERT INTO Program VALUES ('HNZIS',   'Information Systems');
+INSERT INTO Program VALUES ('HNZECON', 'Economics of IS');
+
+INSERT INTO student VALUES ('241', 'Singh',  'Vijay',   'vijay@ab.uni.edu',  'COMPFIN');
+INSERT INTO student VALUES ('207', 'Guerra', 'Richard', 'rg11@ab.uni.edu',   'COMPFIN');
+INSERT INTO student VALUES ('213', 'Miller', 'Sandra',  'sm5o@ab.uni.edu',   'HNZIS');
+INSERT INTO student VALUES ('231', 'Holin',  'John',    'john3@ab.uni.edu',  'HNZIS');
+INSERT INTO student VALUES ('238', 'Johnson', 'Richard', 'jr9f@ab.uni.edu',  'COMPFIN');
+INSERT INTO student VALUES ('323', 'Nimoy',   'Joan',    'joan@ab.uni.edu',  'COMPFIN');
+INSERT INTO student VALUES ('320', 'Tavernier', 'Anna',  'anna@ab.uni.edu',  'HNZIS');
+INSERT INTO student VALUES ('360', 'Bevens',    'John',  'jb23@ab.uni.edu',  'HNZIS');
+INSERT INTO student VALUES ('362', 'Couples',   'Fred',  'fred@ab.uni.edu',  'COMPFIN');
+INSERT INTO student VALUES ('425', 'Pepper',  'Angela',  'angie@ab.uni.edu', 'HNZIS');
+INSERT INTO student VALUES ('407', 'Lee',     'Bing',    'binlee@ab.uni.edu', 'HNZIS');
+INSERT INTO student VALUES ('416', 'Price',   'Michael', 'price@ab.uni.edu', 'COMPFIN');
+INSERT INTO student VALUES ('437', 'Young',   'James',   'jy22@ab.uni.edu',  'HNZECON');
+INSERT INTO student VALUES ('450', 'Sanchez', 'Ruben',   'ruben@ab.uni.edu', 'HNZECON');
+
+INSERT INTO location VALUES ('1', 'HBH', '112');
+INSERT INTO location VALUES ('2', 'HBH', '116');
+INSERT INTO location VALUES ('3', 'NSH', '116');
+INSERT INTO location VALUES ('4', 'HBH', '253');
+INSERT INTO location VALUES ('5', 'NSH', '305');
+INSERT INTO location VALUES ('6', 'HBH', '3015');
+
+INSERT INTO item VALUES 
+('15', 'Dell', 'XPS 13', '6th Generation Intel Core i5 Processor 2.8GHz, 8GB Memory, 256GB Solid State Drive');
+INSERT INTO item VALUES 
+('17', 'Apple', 'Mac Pro', '804457 3.5GHz 6-Core Intel Xeon E5 Processor, 16GB 1866MHz DDR3 ECC memory, 256Gb PCIe-based flash storage.');
+INSERT INTO item VALUES 
+('19', 'HP', 'Spectre', 'Spectre x360, Intel core i5-5200U Processor 2.2GHz; 8GB RAM memory expandable to 16GB; SSD Drive; Long battery life');
+INSERT INTO item VALUES 
+('23', 'Apple', 'iMac', '805023 3.3GHz quad-core Intel Core i5 processor, Turbo boost up to 3.9GHz, 8GB memory, 2TB Fusion Drive, AMD Radeon R9 M395 with 2GB video memory, Retina 5K 5120-by-2880 P3 display');
+INSERT INTO item VALUES 
+('27', 'Dell', 'XPS 15', '15.6" display, 8th Generation Intel Core i9 Processor, 32GB Memory, 1TB Hard Drive');
+INSERT INTO item VALUES 
+('29', 'Apple', 'MacBook Pro', ' 2.9GHz 6-Core Intel Core i9, 32GB RAM, 1TB SSD, Radeon Pro 560X; Turbo Boost up to 4.3GHz');
+
+INSERT INTO computer VALUES ('C8',  'Newell',   '07-APR-2017',  999, '3', '15', 'Best Buy');
+INSERT INTO computer VALUES ('C10', 'Caracas',  '15-MAY-2017',  999, '2', '15', 'Dell');
+INSERT INTO computer VALUES ('C18', 'Bell',     '25-JUN-2017', 1149, '2', '19', 'HP');
+INSERT INTO computer VALUES ('C19', 'Simon',    '25-JUN-2017', 1149, '1', '19', 'HP');
+INSERT INTO computer VALUES ('C21', 'Hobbit',   '07-JUN-2017', 3699, '1', '17', 'Campus Store');
+INSERT INTO computer VALUES ('C22', 'Azkaban',  '02-NOV-2017', 1149, '3', '19', 'HP');
+INSERT INTO computer VALUES ('C25', 'Avatar',   '02-NOV-2017', 3699, '3', '17', 'Campus Store');
+INSERT INTO computer VALUES ('C28', 'Dinar',    '25-JUN-2017', 1149, '3', '19', 'HP');
+INSERT INTO computer VALUES ('C29', 'Goldeneye','03-MAY-2017', 3999, '1', '17', 'Apple Store');
+INSERT INTO computer VALUES ('C30', 'Barnaby',  '25-JUN-2017',  999, '2', '15', 'Dell');
+INSERT INTO computer VALUES ('C32', 'Stargate', '16-AUG-2018', 2299, '5', '23', 'Apple Store');
+INSERT INTO computer VALUES ('C33', 'Cloud',    '16-AUG-2018', 1450, '6', '19', 'HP');
+INSERT INTO computer VALUES ('C34', 'Koala',    '16-AUG-2018', 2299, '4', '23', 'Apple Store');
+INSERT INTO computer VALUES ('C35', 'Kinetic',  '16-AUG-2017', 2968, '5', '27', 'Best Buy');
+INSERT INTO computer VALUES ('C36', 'Xeon',      '6-SEP-2017', 3749, '4', '29', 'Apple Store');
+
+INSERT INTO loan VALUES 
+(1, '241', 'C8', to_date('15-JUN-17  3:09pm', 'dd-mon-yy hh:miam'), to_date('04-SEP-17 10:40am', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(2, '207', 'C30', to_date('21-AUG-17  3:43pm', 'dd-mon-yy hh:miam'), to_date('21-AUG-17  4:25pm', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(3, '238', 'C10', to_date('22-AUG-17  9:06am', 'dd-mon-yy hh:miam'), to_date('21-MAY-18  1:30pm', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(4, '231', 'C18', to_date('21-AUG-17  9:11am', 'dd-mon-yy hh:miam'), to_date('21-AUG-17  2:11pm', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(5, '207', 'C18', to_date('21-AUG-17  3:43pm', 'dd-mon-yy hh:miam'), to_date('12-APR-18  2:25pm', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(6, '213', 'C19', to_date('21-AUG-17  3:55pm', 'dd-mon-yy hh:miam'), to_date('11-SEP-17  4:06pm', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(7, '231', 'C29', to_date('22-AUG-17 10:20am', 'dd-mon-yy hh:miam'), to_date('08-FEB-18 11:51am', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(8, '213', 'C19', to_date('11-SEP-17  4:45pm', 'dd-mon-yy hh:miam'), to_date('17-MAY-18 10:23am', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(9, '323', 'C28', to_date('11-SEP-17 11:30am', 'dd-mon-yy hh:miam'), to_date('05-APR-18  3:00pm', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(10, '320', 'C8',  to_date('28-SEP-17 10:32am', 'dd-mon-yy hh:miam'), to_date('09-OCT-17  9:49am', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(11, '360', 'C8',  to_date('09-OCT-17  4:16pm', 'dd-mon-yy hh:miam'), to_date('20-APR-18  9:33am', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(12, '362', 'C22', to_date('20-NOV-17  9:23am', 'dd-mon-yy hh:miam'), to_date('23-NOV-17  9:55am', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(13, '241', 'C22', to_date('30-NOV-17 10:45am', 'dd-mon-yy hh:miam'), NULL);
+INSERT INTO loan VALUES 
+(14, '238', 'C25', to_date('11-DEC-17 10:58am', 'dd-mon-yy hh:miam'), to_date('21-MAY-18 10:06am', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(15, '362', 'C8',  to_date('03-MAY-17  9:01am', 'dd-mon-yy hh:miam'), to_date('10-MAY-17 12:34pm', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(16, '360', 'C29', to_date('05-MAY-17 11:16am', 'dd-mon-yy hh:miam'), to_date('13-JUL-17 10:10am', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(17, '238', 'C10', to_date('24-MAY-17 10:12am', 'dd-mon-yy hh:miam'), NULL);
+INSERT INTO loan VALUES 
+(18, '362', 'C21', to_date('14-JUN-17  9:12am', 'dd-mon-yy hh:miam'), to_date('15-SEP-17 11:20am', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(19, '437', 'C29', to_date('14-JUL-17  3:09pm', 'dd-mon-yy hh:miam'), to_date('21-AUG-17 10:40am', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES
+(20, '437', 'C36', to_date('15-SEP-17  1:47pm', 'dd-mon-yy hh:miam'), to_date('30-MAR-18 11:20am', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES
+(21, '362', 'C35', to_date('21-SEP-17  1:47pm', 'dd-mon-yy hh:miam'), to_date('31-JAN-18 11:20am', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(22, '320', 'C29', to_date('22-FEB-18 10:00am', 'dd-mon-yy hh:miam'), to_date('26-MAR-18  3:00pm', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(23, '323', 'C30', to_date('12-APR-18 12:45pm', 'dd-mon-yy hh:miam'), to_date('25-AUG-18  1:00pm', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES 
+(24, '360', 'C21', to_date('23-APR-18  9:31am', 'dd-mon-yy hh:miam'), to_date('17-MAY-18  9:37am', 'dd-mon-yy hh:miam'));
+INSERT INTO loan VALUES (25, '207', 'C28', to_date('26-APR-18  4:24pm', 'dd-mon-yy hh:miam'), null);
+INSERT INTO loan VALUES (26, '231', 'C25', to_date('23-AUG-18  9:12am', 'dd-mon-yy hh:miam'), null);
+INSERT INTO loan VALUES (27, '213', 'C19', to_date('27-AUG-18  9:31am', 'dd-mon-yy hh:miam'), null);
+INSERT INTO loan VALUES (28, '425', 'C30', to_date('30-AUG-18 11:02am', 'dd-mon-yy hh:miam'), null);
+INSERT INTO loan VALUES (29, '416', 'C32', to_date('30-AUG-18 11:13am', 'dd-mon-yy hh:miam'), null);
+INSERT INTO loan VALUES (30, '320', 'C8',  to_date('30-AUG-18  1:47pm', 'dd-mon-yy hh:miam'), null);
+INSERT INTO loan VALUES (31, '360', 'C21', to_date('17-SEP-18 12:42pm', 'dd-mon-yy hh:miam'), null);
+INSERT INTO loan VALUES (32, '362', 'C18', to_date('19-SEP-18  1:47pm', 'dd-mon-yy hh:miam'), null);
+
+Commit;
+
+
+-- Additions based on the first SQL assignment:
+
+INSERT INTO item VALUES 
+('31', 'Dell', 'Inspiron', 'Inspiron 15.6; 8th Generation Intel Core i5-8250U Processor (6MB Cache, up to 3.4GHz); 256GB Solid State Drive; 8GB, DDR4, 2400MHz; up to 32GB');
+
+INSERT INTO item VALUES 
+('32', 'HP', 'Spectre', '8th Gen Intel Core i7-8550U mobile processor; 512GB solid state drive (SSD); Intel UHD Graphics 620');
+
+INSERT INTO item VALUES 
+('33', 'Apple', 'Macbook Air', '2.2GHz dual core Intel Core i7; Turbo boost upto 3.2GHz; 512GB solid state drive (SSD)');
+
+ALTER TABLE LOAN
+ADD CONSTRAINT LOAN_DATE_RETURNED_CK
+CHECK (Date_Returned >= Start_Date);
+
+
